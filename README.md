@@ -13,7 +13,7 @@ CPU文件：IP2CPU
 
 单周期。
 
-对应的板子型号：xc7a100tcsg324-2L
+对应的板子型号：NEXYS A7。xc7a100tcsg324-2L。
 
 支持RISCV的少数指令：
 jal beq sw lw 
