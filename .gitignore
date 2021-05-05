@@ -4,5 +4,6 @@ MyIP2SOC.hw
 MyIP2SOC.ip_user_files
 MyIP2SOC.runs
 MyIP2SOC.sim
-
+vivado.jou
+vivado.log
 
