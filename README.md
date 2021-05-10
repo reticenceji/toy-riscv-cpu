@@ -36,12 +36,12 @@ beq x0,x0,end
 addi a0,a0,1
 loop:
 	xor a2,a0,a0
-    andi a3,a0,0x3
-    ori a4,a0,0x3
+	andi a3,a0,0x3
+	ori a4,a0,0x3
 	sw a0,0(x0)
-    lw a1,0(x0)
-    addi a0,a0,1
-end: j loop
+	lw a1,0(x0)
+	addi a0,a0,1
+end: 	j loop
 ```
 
 通过开关SW修改CPU运行状态：
