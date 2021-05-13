@@ -27,7 +27,6 @@ module SCPU_ctrl(
     input [2:0] Fun_ecall,  //Instruction[22:20]
     input [1:0] Fun_mret,   //Instruction[29:28]
     input MIO_ready,
-
     
     output reg [1:0] ImmSel,
     output reg [2:0] ALU_Control,
@@ -61,7 +60,12 @@ module SCPU_ctrl(
         MRET_choose = 5'b11010; 
     parameter                   // for ecall
         ECALL_choose = 3'b000;   
-    
+    parameter                   // for B_opcode
+        BEQ_choose = 3'b000,
+        BNE_choose = 3'b001,
+        BLT_choose = 3'b100,
+        BGE_choose = 3'b101;
+
     always @(*) begin
         case (OPcode)
             L_opcode: ImmSel <= 2'b00;

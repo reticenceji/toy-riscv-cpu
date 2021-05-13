@@ -167,7 +167,7 @@ module DataPath(
     wire [31:0] PC_next_b,PC_next_j;
     assign Is_branch = Branch & ALU_zero;
     MUX2T1_32 MUX2T1_32_1(
-        .s(Branch),     
+        .s(Is_branch),     
         .I0(PC_current+4),     
         .I1(PC_current+Immediate_number), //可以这么写吗
 
