@@ -144,7 +144,8 @@ module CPU_SOC(
         .rst(rst),
         .Data_in(Cpu_data4bus),        // TODO
         .inst_in(instruction),
-
+        .INT(SW_OK[1]),
+        
         .CPU_MIO(),// NULL
         .MemRW(MemRW),
         .Addr_out(Addr_out),

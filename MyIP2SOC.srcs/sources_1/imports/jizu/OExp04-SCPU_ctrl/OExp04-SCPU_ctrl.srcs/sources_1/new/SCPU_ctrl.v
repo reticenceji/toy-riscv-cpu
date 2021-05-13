@@ -24,13 +24,17 @@ module SCPU_ctrl(
     input [4:0] OPcode,     //Instruction[6:2]
     input [2:0] Fun3,       //Instruction[14:12]
     input Fun7,             //Instruction[30]
+    input [2:0] Fun_ecall,  //Instruction[22:20]
+    input [1:0] Fun_mret,   //Instruction[29:28]
     input MIO_ready,
+
     
     output reg [1:0] ImmSel,
     output reg [2:0] ALU_Control,
     output reg [1:0] MemtoReg,
     output reg ALU_src_B,   //
-    output reg Jump,Branch,MemRW,RegWrite,CPU_MIO
+    output reg Jump,Branch,MemRW,RegWrite,CPU_MIO,
+    output reg Ecall,Mret,Ill_instr
     );
     
     parameter 
@@ -39,7 +43,8 @@ module SCPU_ctrl(
         S_opcode=5'b01000,      //sd,sw,
         L_opcode=5'b00000,      //ld,lw
         JAL_opcode=5'b11011,    //jal
-        I_opcode = 5'b00100;    //addi,slti,xori,ori,andi
+        I_opcode = 5'b00100,    //addi,slti,xori,ori,andi
+        CSR_opcode = 5'b11100;  // mret, ecall
     parameter                   // for ALU_SrcB
         REG_choose = 0,
         IMM_choose = 1;
@@ -52,7 +57,11 @@ module SCPU_ctrl(
         NOR_choose = 3'b100,
         SRL_choose = 3'b101,
         XOR_choose = 3'b011; 
-
+    parameter                   // for mret
+        MRET_choose = 5'b11010; 
+    parameter                   // for ecall
+        ECALL_choose = 3'b000;   
+    
     always @(*) begin
         case (OPcode)
             L_opcode: ImmSel <= 2'b00;
@@ -98,7 +107,10 @@ module SCPU_ctrl(
         Jump <= (OPcode==JAL_opcode)?1:0;   
         Branch <= (OPcode == B_opcode)?1:0;     
         RegWrite <= (OPcode == I_opcode || OPcode == R_opcode || OPcode==L_opcode || OPcode==JAL_opcode)?1:0;
-        MemRW <= (OPcode == S_opcode)?1:0; 
+        MemRW <= (OPcode == S_opcode)?1:0;
+        Ecall <= (Fun_ecall == ECALL_choose && OPcode == CSR_opcode)?1:0;
+        Mret <= ({Fun_mret,Fun_ecall} == MRET_choose && OPcode == CSR_opcode)?1:0;
+        Ill_instr <= (OPcode == B_opcode || OPcode == R_opcode || OPcode == S_opcode || OPcode == L_opcode || OPcode == JAL_opcode || OPcode == I_opcode || OPcode == CSR_opcode)?0:1;
         CPU_MIO <= 0;    // not use
     end
     

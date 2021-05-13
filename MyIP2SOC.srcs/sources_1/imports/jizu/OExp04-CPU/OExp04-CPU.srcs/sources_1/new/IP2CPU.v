@@ -25,7 +25,8 @@ module SCPU(
     input wire MIO_ready,
     input wire [31:0] Data_in,
     input wire [31:0] inst_in,
-
+    input wire INT,
+    
     output wire [31:0] Addr_out,
     output wire [31:0] Data_out,
     output wire [31:0] PC_out,
@@ -67,6 +68,7 @@ module SCPU(
     );
 
     wire ctrl_Jump,ctrl_Branch,ctrl_MemRW,ctrl_RegWrite,ctrl_CPU_MIO,ctrl_ALU_src_B;
+    wire ctrl_Ecall,ctrl_Mret,ctrl_Ill_instr;
     wire [1:0] ctrl_MemtoReg;
     wire [1:0] ctrl_ImmSel;
     wire [2:0] ctrl_ALU_Control;
@@ -76,7 +78,9 @@ module SCPU(
         .Fun3(inst_in[14:12]),       //Instruction[14:12]
         .Fun7(inst_in[30]),             //Instruction[30]
         .MIO_ready(MIO_ready),
-    
+        .Fun_ecall(inst_in[22:20]),  //Instruction[22:20]
+        .Fun_mret(inst_in[29:28]), 
+
         .ImmSel(ctrl_ImmSel),
         .ALU_Control(ctrl_ALU_Control),
         .MemtoReg(ctrl_MemtoReg),
@@ -85,7 +89,10 @@ module SCPU(
         .Branch(ctrl_Branch),
         .MemRW(ctrl_MemRW),
         .RegWrite(ctrl_RegWrite),
-        .CPU_MIO(ctrl_CPU_MIO)
+        .CPU_MIO(ctrl_CPU_MIO),
+        .Ecall(ctrl_Ecall),
+        .Mret(ctrl_Mret),
+        .Ill_instr(ctrl_Ill_instr)
     );
 
     DataPath DataPath_ins(
@@ -99,6 +106,10 @@ module SCPU(
         .clk(clk),      .rst(rst),
         .Data_in    (Data_in),
         .inst_field (inst_in),
+        .mret(ctrl_Mret),        
+        .ecall(ctrl_Ecall),
+        .ill_instr(ctrl_Ill_instr),
+        .INT(INT),          // CPU外部中断信号
 
         .ALU_out(Addr_out),
         .Data_out(Data_out),

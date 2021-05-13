@@ -32,7 +32,11 @@ module DataPath(
     input wire Jump,
     input wire Branch,
     input wire RegWrite,
-    
+    input wire mret,        
+    input wire ecall,
+    input wire ill_instr,
+    input wire INT,
+
     output wire[31:0] PC_out,
     output wire[31:0] Data_out,
     output wire[31:0] ALU_out,
@@ -148,33 +152,33 @@ module DataPath(
     );
 
     // PC
-    wire [31:0] PC_current,PC_next;
+    wire [31:0] PC_current,PC_next_int;
     REG32 REG321(
         .clk(clk),
         .rst(rst),
         .CE(1),   //enable
-        .D(PC_next),
+        .D(PC_next_int),
 
         .Q(PC_current)
     );
 
     //判断是否需要branch/jal
     wire Is_branch;
-    wire [31:0] PC_next_1;
+    wire [31:0] PC_next_b,PC_next_j;
     assign Is_branch = Branch & ALU_zero;
     MUX2T1_32 MUX2T1_32_1(
         .s(Branch),     
         .I0(PC_current+4),     
         .I1(PC_current+Immediate_number), //可以这么写吗
 
-        .o(PC_next_1)
+        .o(PC_next_b)
     );
     MUX2T1_32 MUX2T1_32_2(
         .s(Jump),
-        .I0(PC_next_1),
+        .I0(PC_next_b),
         .I1(PC_current+Immediate_number), 
 
-        .o(PC_next)
+        .o(PC_next_j)
     );
 
     MUX4T1_32 MUX4T1_32_1(
@@ -186,6 +190,20 @@ module DataPath(
 
         .o(Reg_write)
     );
+
+    // TODO 中断处理
+    RV_Int RV_Int0 (
+        .clk(clk),
+        .reset(rst),
+        .INT(INT),          
+        .ecall(ecall),
+        .mret(mret),
+        .ill_instr(ill_instr),
+        .pc_next(PC_next_j),
+
+        .pc(PC_next_int)
+    );
+
     //输出
     assign ALU_out = ALU_Result;
     assign PC_out = PC_current;
