@@ -30,7 +30,7 @@ module DataPath(
     input wire [1:0] MentoReg,
     input wire ALUSrc_B,
     input wire Jump,
-    input wire Branch,
+    input wire [3:0] Branch,
     input wire RegWrite,
     input wire mret,        
     input wire ecall,
@@ -165,7 +165,15 @@ module DataPath(
     //判断是否需要branch/jal
     wire Is_branch;
     wire [31:0] PC_next_b,PC_next_j;
-    assign Is_branch = Branch & ALU_zero;
+    
+    Branch_ctrl Branch_ctrl_1(
+        .func(Branch),
+        .sign(ALU_Result[31]),
+        .zero(ALU_zero),
+
+        .is_branch(Is_branch)
+    );
+
     MUX2T1_32 MUX2T1_32_1(
         .s(Is_branch),     
         .I0(PC_current+4),     

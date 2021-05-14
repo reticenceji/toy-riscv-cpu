@@ -67,12 +67,12 @@ module SCPU(
     output wire [31:0] t6  
     );
 
-    wire ctrl_Jump,ctrl_Branch,ctrl_MemRW,ctrl_RegWrite,ctrl_CPU_MIO,ctrl_ALU_src_B;
+    wire ctrl_Jump,ctrl_MemRW,ctrl_RegWrite,ctrl_CPU_MIO,ctrl_ALU_src_B;
     wire ctrl_Ecall,ctrl_Mret,ctrl_Ill_instr;
     wire [1:0] ctrl_MemtoReg;
     wire [1:0] ctrl_ImmSel;
     wire [2:0] ctrl_ALU_Control;
-    
+    wire [3:0] ctrl_Branch;
     SCPU_ctrl SCPU_ctrl_ins(
         .OPcode(inst_in[6:2]),     //Instruction[6:2]
         .Fun3(inst_in[14:12]),       //Instruction[14:12]

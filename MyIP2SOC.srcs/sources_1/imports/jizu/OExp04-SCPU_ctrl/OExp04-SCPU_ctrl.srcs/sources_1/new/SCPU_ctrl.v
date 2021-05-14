@@ -32,7 +32,8 @@ module SCPU_ctrl(
     output reg [2:0] ALU_Control,
     output reg [1:0] MemtoReg,
     output reg ALU_src_B,   //
-    output reg Jump,Branch,MemRW,RegWrite,CPU_MIO,
+    output reg [3:0] Branch,
+    output reg Jump,MemRW,RegWrite,CPU_MIO,
     output reg Ecall,Mret,Ill_instr
     );
     
@@ -60,11 +61,6 @@ module SCPU_ctrl(
         MRET_choose = 5'b11010; 
     parameter                   // for ecall
         ECALL_choose = 3'b000;   
-    parameter                   // for B_opcode
-        BEQ_choose = 3'b000,
-        BNE_choose = 3'b001,
-        BLT_choose = 3'b100,
-        BGE_choose = 3'b101;
 
     always @(*) begin
         case (OPcode)
@@ -109,7 +105,7 @@ module SCPU_ctrl(
         MemtoReg <= (OPcode == JAL_opcode)?2:((OPcode==L_opcode)?1:0);
         ALU_src_B <= (OPcode==R_opcode || OPcode==B_opcode)?REG_choose:IMM_choose;   
         Jump <= (OPcode==JAL_opcode)?1:0;   
-        Branch <= (OPcode == B_opcode)?1:0;     
+        Branch <= {(OPcode == B_opcode?1'b1:1'b0),Fun3};
         RegWrite <= (OPcode == I_opcode || OPcode == R_opcode || OPcode==L_opcode || OPcode==JAL_opcode)?1:0;
         MemRW <= (OPcode == S_opcode)?1:0;
         Ecall <= (Fun_ecall == ECALL_choose && OPcode == CSR_opcode)?1:0;
