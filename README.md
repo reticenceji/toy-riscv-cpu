@@ -2,11 +2,12 @@
 
 第一次用Git管理Vivado工程。
 
-要利用tcl脚本。打开vivado console，利用`pwd`和`cd`进入所在目录，`source tcl脚本`，就会在当前目录下生成工程文件。
+要利用tcl脚本。打开vivado console，利用 `pwd` 和 `cd` 进入所在目录， `source tcl脚本` ，就会在当前目录下生成工程文件。
 
 需要给板子连上VGA，然后VGA会显示相关的CPU信息。
 
 要执行指令，需要修改 MyIP2SOC.srcs/sources_1/ip/dist_mem_gen_0/I_mem.coe 文件。推荐一个[在线编译器](https://venus.cs61c.org/)
+
 ## CPU说明
 
 CPU文件：IP2CPU
@@ -30,7 +31,7 @@ srl srli (逻辑右移)
 
 目前的指令：你可以根据需要修改
 
-```
+``` 
 addi a0,x0,1
 beq x0,x0,end
 addi a0,a0,1
@@ -52,7 +53,6 @@ end: 	j loop
 | SW[8]SW[2] | 01   | CPU自动单步时钟(2*24分频)          |
 | SW[8]SW[2] | 1X   | CPU手动单步时钟(按键BTN_OK[0] M18) |
 
-
 VGA会显示寄存器的状态
 
 ## 中断
@@ -61,7 +61,8 @@ VGA会显示寄存器的状态
 
 | CSR   | 进入操作                                    | 返回操作   |
 | ----- | ------------------------------------------- | ---------- |
-| mtvec | [R] 读取跳转位置                            | -          |
+| mtvec | [R] 读取跳转位置<br />[!] 采用8086的跳转表形式 | -          |
 | mepc  | [W] 存储PC+4<br />[!] 这是不符合RISCV标准的 | [R] 读取PC |
-
+| mstatus | [W] 置为1 <br />[!] 这是不符合RISCV标准的 | [W] 置为0 |
 ​	
+可以通过SW[1]来产生外部中断，此外还支持ecall指令和非法指令。但是非法指令的判断仅根据OPcode，存在一些指令未支持但是不认为非法的情况，有未定义的行为。
