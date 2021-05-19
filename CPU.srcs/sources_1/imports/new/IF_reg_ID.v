@@ -9,7 +9,7 @@ module IF_reg_ID (
     output reg [31:0] inst_out_IFID //指令输出
 );
     always @(posedge clk_IFID or posedge rst_IFID) begin
-        if (rst_IFID==1'b1) begin
+        if (rst_IFID==1) begin
             PC_out_IFID <= 0;
             inst_out_IFID <= 0;
         end

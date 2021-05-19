@@ -14,7 +14,7 @@ module Pipeline_WB (
 );
 
     MUX4T1_32 MUX4T1_32_1(
-        .s(Data_out_WB),
+        .s(MemtoReg_in_WB),
         .I0(ALU_in_WB),
         .I1(Dmem_data_WB),
         .I2(PC4_in_WB),

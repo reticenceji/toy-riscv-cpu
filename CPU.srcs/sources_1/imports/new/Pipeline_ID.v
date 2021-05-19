@@ -100,10 +100,9 @@ module Pipeline_ID(
         .Ill_instr()
     );
 
-    wire [31:0] Immediate_number;
     ImmGen ImmGen1(
         .ImmSel(ctrl_ImmSel),
-        .Inst_in_ID(Inst_in_ID),
+        .inst_field(Inst_in_ID),
     
         .Imm_out(Imm_out_ID)            // 输出
         );
@@ -118,7 +117,7 @@ module Pipeline_ID(
         .Wt_data(Wt_data_ID),           
 
         .Rs1_data(Rs1_out_ID),
-        .Rs2_data(Rs1_out_ID),          // 这两个是输出
+        .Rs2_data(Rs2_out_ID),          // 这两个是输出
         
         .ra (ra ),
         .sp (sp ),

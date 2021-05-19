@@ -26,7 +26,7 @@ module Pipeline_EX (
     ALU ALU1(
         .A(Rs1_in_EX),
         .B(ALU_add2),
-        .ALU_operation(ALU_Control_in_EX),
+        .ALU_operation(ALU_control_in_EX),
 
         .res(ALU_out_EX),   
         .zero(zero_out_EX)

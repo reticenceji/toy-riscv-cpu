@@ -137,16 +137,17 @@ module CPU_SOC(
     wire [31:0] t4  ;
     wire [31:0] t5  ;
     wire [31:0] t6  ;
-
+//  单周期CPU 
+/**
     SCPU U1(
-        .MIO_ready(),// NULL
+//        .MIO_ready(),
         .clk(Clk_CPU),
         .rst(rst),
         .Data_in(Cpu_data4bus),        // TODO
         .inst_in(instruction),
         .INT(SW_OK[1]),
         
-        .CPU_MIO(),// NULL
+//        .CPU_MIO(),
         .MemRW(MemRW),
         .Addr_out(Addr_out),
         .Data_out(Data_out),
@@ -184,7 +185,57 @@ module CPU_SOC(
         .t5 (t5 ),
         .t6 (t6 )
     );
+*/
+    // 流水线CPU
+    Pipeline_CPU U1(
+        .clk(Clk_CPU),                  //时钟
+        .rst(rst),                  //复位
+        .Data_in(Cpu_data4bus),        //存储器数据输入
+        .inst_IF(instruction),        //取指阶段指令
 
+    // for debug
+        .PC_out_IF(PC_out),    //取指阶段PC输出
+        .PC_out_ID(),          //译码阶段PC输出
+        .inst_ID(),      //译码阶段指令
+        .PC_out_Ex(),    //执行阶段PC输出
+        .MemRW_Ex(),     //执行阶段存储器读写
+        .MemRW_Mem(MemRW),    //访存阶段存储器读写
+        .Addr_out(Addr_out),     //地址输出
+        .Data_out(),     //CPU数据输出
+        .Data_out_WB(Data_out),  //写回数据输出
+        
+        .ra (ra ),
+        .sp (sp ),
+        .gp (gp ),
+        .tp (tp ),
+        .t0 (t0 ),
+        .t1 (t1 ),
+        .t2 (t2 ),
+        .s0 (s0 ),
+        .s1 (s1 ),
+        .a0 (a0 ),
+        .a1 (a1 ),
+        .a2 (a2 ),
+        .a3 (a3 ),
+        .a4 (a4 ),
+        .a5 (a5 ),
+        .a6 (a6 ),
+        .a7 (a7 ),
+        .s2 (s2 ),
+        .s3 (s3 ),
+        .s4 (s4 ),
+        .s5 (s5 ),
+        .s6 (s6 ),
+        .s7 (s7 ),
+        .s8 (s8 ),
+        .s9 (s9 ),
+        .s10(s10),
+        .s11(s11),
+        .t3 (t3 ),
+        .t4 (t4 ),
+        .t5 (t5 ),
+        .t6 (t6 )
+    );
     MIO_BUS U4(
         .clk(clk_100mhz),
         .rst(rst),

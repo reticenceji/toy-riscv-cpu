@@ -24,7 +24,7 @@ module EX_reg_MEM (
     output reg [3:0] Branch_out_EXMem, //Branch
     output reg MemRW_out_EXMem, //存储器读写
     output reg Jump_out_EXMem, //Jal
-    output reg MemtoReg_out_EXMem, //写回
+    output reg [1:0] MemtoReg_out_EXMem, //写回
     output reg RegWrite_out_EXMem //寄存器堆读写
 );
 

@@ -83,8 +83,11 @@ module Pipeline_CPU(
         .PC_out_IF(PC_out_IF) //PC输出
     );
 
-    wire [31:0] Inst_out_IFID,PC_out_IFID;
+    wire [31:0] inst_out_IFID,PC_out_IFID;
     IF_reg_ID IF_ID(
+        .clk_IFID(clk),
+        .rst_IFID(rst),
+        .en_IFID(1),
         .PC_in_IFID(PC_out_IF),        //PC输入
         .inst_in_IFID(inst_IF),      //指令输入
 
@@ -94,17 +97,17 @@ module Pipeline_CPU(
 
     wire [4:0] Wt_addr_out_ID;
     wire [4:0] Wt_addr_out_MemWB; //写目的地址输出
-    wire  RegWrite_out_MemWB; //寄存器堆读写);
+    wire RegWrite_out_MemWB; //寄存器堆读写);
 
     wire [31:0] Imm_out_ID,Rs1_out_ID,Rs2_out_ID;
     wire [3:0] Branch_ID;
     wire [2:0] ALU_control_ID;
-    wire [1:0] MemtoReg_Id;
+    wire [1:0] MemtoReg_ID;
     wire ALUSrc_B_ID,MemRW_ID,Jump_ID,RegWrite_out_ID;
     Pipeline_ID Instruction_Decode(
         .clk_ID(clk),
         .rst_ID(rst),
-        .Inst_in_ID(Inst_out_IFID),
+        .Inst_in_ID(inst_out_IFID),
         .RegWrite_in_ID(RegWrite_out_MemWB),
         .Wt_addr_ID(Wt_addr_out_MemWB),
         .Wt_data_ID(Data_out_WB),
@@ -188,7 +191,7 @@ module Pipeline_CPU(
         .Rs1_out_IDEX(Rs1_out_IDEX),
         .Rs2_out_IDEX(Rs2_out_IDEX),
         .Imm_out_IDEX(Imm_out_IDEX),
-        .ALUSrc_B_out_IDEX(ALUsrc_B_out_IDEX),
+        .ALUSrc_B_out_IDEX(ALUSrc_B_out_IDEX),
         .ALU_control_out_IDEX(ALU_control_out_IDEX),
         .Branch_out_IDEX(Branch_out_IDEX),
         .MemRW_out_IDEX(MemRW_out_IDEX),
@@ -207,7 +210,7 @@ module Pipeline_CPU(
         .Rs1_in_EX(Rs1_out_IDEX),
         .Rs2_in_EX(Rs2_out_IDEX),
         .Imm_in_EX(Imm_out_IDEX),
-        .ALUSrc_B_in_EX(Alusrc_B_out_IDEX),
+        .ALUSrc_B_in_EX(ALUSrc_B_out_IDEX),
         .ALU_control_in_EX(ALU_control_out_IDEX),
 
         .PC_out_EX(PC_out_EX),
@@ -219,14 +222,14 @@ module Pipeline_CPU(
 
     wire [31:0] PC4_out_EXMem; //PC+4输出
     wire [4:0] Wt_addr_out_EXMem; //写目的寄存器输出
-    wire  zero_out_EXMem; //zero
+    wire zero_out_EXMem; //zero
     wire [31:0] ALU_out_EXMem; //ALU输出
     wire [31:0] Rs2_out_EXMem; //操作数2输出
-    wire  [3:0] Branch_out_EXMem; //Branch
-    wire  MemRW_out_EXMem; //存储器读写
-    wire  Jump_out_EXMem; //Jal
-    wire  MemtoReg_out_EXMem; //写回
-    wire  RegWrite_out_EXMem; //寄存器堆读写
+    wire [3:0] Branch_out_EXMem; //Branch
+    wire MemRW_out_EXMem; //存储器读写
+    wire Jump_out_EXMem; //Jal
+    wire [1:0] MemtoReg_out_EXMem; //写回
+    wire RegWrite_out_EXMem; //寄存器堆读写
     EX_reg_MEM EX_MEM(
         .clk_EXMem(clk),
         .rst_EXMem(rst),
@@ -252,7 +255,7 @@ module Pipeline_CPU(
         .Branch_out_EXMem(Branch_out_EXMem),
         .MemRW_out_EXMem(MemRW_out_EXMem),
         .Jump_out_EXMem(Jump_out_EXMem),
-        .MemtoReg_out_EXMem(MemRW_out_EXMem),
+        .MemtoReg_out_EXMem(MemtoReg_out_EXMem),
         .RegWrite_out_EXMem(RegWrite_out_EXMem)
     );
 
@@ -279,8 +282,8 @@ module Pipeline_CPU(
         .Wt_addr_MemWB(Wt_addr_out_EXMem),
         .ALU_in_MemWB(ALU_out_EXMem),
         .Dmem_data_MemWB(Data_in),
-        .MemtoReg_in_MemWB(MemtoReg_out_IDEX),
-        .RegWrite_in_MemWB(RegWrite_out_IDEX),
+        .MemtoReg_in_MemWB(MemtoReg_out_EXMem),
+        .RegWrite_in_MemWB(RegWrite_out_EXMem),
 
         .PC4_out_MemWB(PC4_out_MemWB),
         .Wt_addr_out_MemWB(Wt_addr_out_MemWB),
@@ -300,7 +303,7 @@ module Pipeline_CPU(
 
     // assign PC_out_IF = PC_out_IF;
     assign PC_out_ID = PC_out_IFID;
-    assign inst_ID = Inst_out_IFID;
+    assign inst_ID = inst_out_IFID;
     assign PC_out_Ex = PC_out_EX;
     assign MemRW_Ex = MemRW_out_IDEX;
     assign MemRW_Mem = MemRW_out_EXMem;
