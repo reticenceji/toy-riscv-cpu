@@ -5,7 +5,8 @@ MyIP2SOC.hw
 MyIP2SOC.ip_user_files
 MyIP2SOC.runs
 MyIP2SOC.sim
-MyIP2SOC
+.Xil
+xsim.dir
 vivado.jou
 vivado.log
 MyIP2SOC.xpr
