@@ -2,11 +2,9 @@
 
 第一次用Git管理Vivado工程。
 
-要利用tcl脚本。打开vivado console，利用 `pwd` 和 `cd` 进入所在目录， `source tcl脚本` ，就会在当前目录下生成工程文件。
+要利用tcl脚本。打开vivado console，进入所在目录， `source tcl脚本` ，就会在当前目录下生成工程文件。
 
 需要给板子连上VGA，然后VGA会显示相关的CPU信息。
-
-要执行指令，需要修改 MyIP2SOC.srcs/sources_1/ip/dist_mem_gen_0/I_mem.coe 文件。推荐一个[在线编译器](https://venus.cs61c.org/)
 
 ## CPU说明
 
@@ -66,3 +64,6 @@ VGA会显示寄存器的状态
 | mstatus | [W] 置为1 <br />[!] 这是不符合RISCV标准的 | [W] 置为0 |
 
 可以通过SW[1]来产生外部中断，此外还支持ecall指令和非法指令。但是非法指令的判断仅根据OPcode，存在一些指令未支持但是不认为非法的情况，有未定义的行为。
+
+## Pipeline
+TODO
