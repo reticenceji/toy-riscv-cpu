@@ -1,2 +1,4 @@
 # 只需要src即可
 CPU
+CPU.gen
+.Xil

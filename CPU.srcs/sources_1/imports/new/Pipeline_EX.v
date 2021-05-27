@@ -32,7 +32,7 @@ module Pipeline_EX (
         .zero(zero_out_EX)
     );
 
-    assign PC_out_EX = PC_in_EX;
+    assign PC_out_EX = PC_in_EX + Imm_in_EX;
     assign PC4_out_EX = PC_in_EX + 4;
     assign Rs2_out_EX = ALU_add2;
 endmodule //Pipeline_EX
