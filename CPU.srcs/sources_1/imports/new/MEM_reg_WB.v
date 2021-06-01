@@ -11,29 +11,17 @@ module MEM_reg_WB (
     input[1:0] MemtoReg_in_MemWB, //写回
     input RegWrite_in_MemWB, //寄存器堆读写
 
-    output reg[31:0] PC4_out_MemWB, //PC+4输出
-    output reg[4:0] Wt_addr_out_MemWB, //写目的地址输出
-    output reg[31:0] ALU_out_MemWB, //ALU输出
-    output reg[31:0] DMem_data_out_MemWB, //存储器数据输出
-    output reg[1:0] MemtoReg_out_MemWB, //写回
-    output reg RegWrite_out_MemWB //寄存器堆读写);
+    output [31:0] PC4_out_MemWB, //PC+4输出
+    output [4:0] Wt_addr_out_MemWB, //写目的地址输出
+    output [31:0] ALU_out_MemWB, //ALU输出
+    output [31:0] DMem_data_out_MemWB, //存储器数据输出
+    output [1:0] MemtoReg_out_MemWB, //写回
+    output RegWrite_out_MemWB //寄存器堆读写);
 );
-    always @(posedge clk_MemWB or posedge rst_MemWB) begin
-        if (rst_MemWB==1) begin
-            PC4_out_MemWB <= 0;
-            Wt_addr_out_MemWB <= 0;
-            ALU_out_MemWB <= 0;
-            DMem_data_out_MemWB <= 0;
-            MemtoReg_out_MemWB<= 0;
-            RegWrite_out_MemWB <= 0;
-        end 
-        else begin
-            PC4_out_MemWB <= PC4_in_MemWB;
-            Wt_addr_out_MemWB <= Wt_addr_MemWB;
-            ALU_out_MemWB <= ALU_in_MemWB;
-            DMem_data_out_MemWB <= Dmem_data_MemWB;
-            MemtoReg_out_MemWB<= MemtoReg_in_MemWB;
-            RegWrite_out_MemWB <= RegWrite_in_MemWB;
-        end
-    end
+    assign PC4_out_MemWB        = rst_MemWB==1? 0 : PC4_in_MemWB        ;
+    assign Wt_addr_out_MemWB    = rst_MemWB==1? 0 : Wt_addr_MemWB       ;
+    assign ALU_out_MemWB        = rst_MemWB==1? 0 : ALU_in_MemWB        ;
+    assign DMem_data_out_MemWB  = rst_MemWB==1? 0 : Dmem_data_MemWB     ;
+    assign MemtoReg_out_MemWB   = rst_MemWB==1? 0 : MemtoReg_in_MemWB   ;
+    assign RegWrite_out_MemWB   = rst_MemWB==1? 0 : RegWrite_in_MemWB   ;
 endmodule //MEM_reg_WB

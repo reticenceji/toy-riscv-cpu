@@ -24,7 +24,7 @@ module regs(
     input clk,rst,RegWrite,
     input [4:0] Rs1_addr,Rs2_addr,Wt_addr,    
     input [31:0] Wt_data,
-    output [31:0] Rs1_data,Rs2_data,
+    output reg [31:0] Rs1_data,Rs2_data,
     
     output wire [31:0] ra  ,
     output wire [31:0] sp  ,
@@ -61,9 +61,22 @@ module regs(
     reg [31:0] register [1:31];
     integer i;
     
-    assign Rs1_data = (Rs1_addr==0)?0:register[Rs1_addr];
-    assign Rs2_data = (Rs2_addr==0)?0:register[Rs2_addr];
-    
+    always @(negedge clk or posedge rst) begin
+            if(rst || Rs1_addr == 0) begin
+                Rs1_data = 0;
+            end
+            else begin
+                Rs1_data = register[Rs1_addr];
+            end
+        end
+    always @(negedge clk or posedge rst) begin 
+        if(rst || Rs2_addr == 0) begin         
+            Rs2_data = 0;                      
+        end                                    
+        else begin                             
+            Rs2_data = register[Rs2_addr];     
+        end                                    
+    end         
     always @(posedge clk or posedge rst) begin
         if (rst==1) for (i=1;i<32;i=i+1) register[i]<=0;
         else if ((Wt_addr!=0) && (RegWrite==1))

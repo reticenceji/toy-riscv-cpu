@@ -193,7 +193,6 @@ module CPU_SOC(
         .Data_in(Cpu_data4bus),        //存储器数据输入
         .inst_IF(instruction),        //取指阶段指令
 
-    // for debug
         .PC_out_IF(PC_out),    //取指阶段PC输出
         .PC_out_ID(),          //译码阶段PC输出
         .inst_ID(),      //译码阶段指令
@@ -201,8 +200,8 @@ module CPU_SOC(
         .MemRW_Ex(),     //执行阶段存储器读写
         .MemRW_Mem(MemRW),    //访存阶段存储器读写
         .Addr_out(Addr_out),     //地址输出
-        .Data_out(),     //CPU数据输出
-        .Data_out_WB(Data_out),  //写回数据输出
+        .Data_out(Data_out),     //CPU数据输出
+        .Data_out_WB(),  //写回数据输出
         
         .ra (ra ),
         .sp (sp ),

@@ -20,7 +20,7 @@ module Pipeline_IF(
     REG32 REG321(
         .clk(clk_IF),
         .rst(rst_IF),
-        .CE(1),   //enable
+        .CE(en_IF),   //enable
         .D(PC_next),
 
         .Q(PC_current)

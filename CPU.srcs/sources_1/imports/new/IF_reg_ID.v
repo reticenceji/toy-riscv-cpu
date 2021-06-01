@@ -2,6 +2,7 @@ module IF_reg_ID (
     input clk_IFID,                 //寄存器时钟
     input rst_IFID,                 //寄存器复位
     input en_IFID,                  //寄存器使能
+    input NOP_IFID,
     input [31:0] PC_in_IFID,        //PC输入
     input [31:0] inst_in_IFID,      //指令输入
 
@@ -12,8 +13,11 @@ module IF_reg_ID (
         if (rst_IFID==1) begin
             PC_out_IFID <= 0;
             inst_out_IFID <= 0;
+        end else if (NOP_IFID==1) begin
+            PC_out_IFID <= 0;
+            inst_out_IFID <= 32'h00000013;
         end
-        else begin
+        else if (en_IFID) begin
             PC_out_IFID <=  PC_in_IFID;
             inst_out_IFID <= inst_in_IFID;
         end

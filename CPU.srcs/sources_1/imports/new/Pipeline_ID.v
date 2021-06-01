@@ -26,9 +26,14 @@ module Pipeline_ID(
     input [31:0] Inst_in_ID,            //指令输入
     
     input RegWrite_in_ID,               //寄存器堆使能
-    input [4:0] Wt_addr_ID,             //写目的地址输入
-    input [31:0] Wt_data_ID,            //写数据输入
+    input wire [4:0] Wt_addr_ID,             //写目的地址输入
+    input wire [31:0] Wt_data_ID,            //写数据输入
     //=================================================
+    output [4:0] Rs1_addr_ID,   //寄存器地址1
+    output [4:0] Rs2_addr_ID,   //寄存器地址2
+    output Rs1_used,            //Rs1被使用
+    output Rs2_used,            //Rs2被使用
+
     output [4:0] Wt_addr_out_ID,        //写目的地址输出
 
     output [31:0] Rs1_out_ID,           //操作数1输出
@@ -76,7 +81,14 @@ module Pipeline_ID(
     output wire [31:0] t5  ,
     output wire [31:0] t6  
     );
-
+    parameter 
+        B_opcode=5'b11000,      //beq,bne,bge
+        R_opcode=5'b01100,      //add,sub.or,and,xor
+        S_opcode=5'b01000,      //sd,sw,
+        L_opcode=5'b00000,      //ld,lw
+        JAL_opcode=5'b11011,    //jal
+        I_opcode = 5'b00100;    //addi,slti,xori,ori,andi
+        
     wire [1:0] ctrl_ImmSel;
     SCPU_ctrl SCPU_ctrl_ins(
         .OPcode(Inst_in_ID[6:2]),       //Instruction[6:2]
@@ -94,6 +106,8 @@ module Pipeline_ID(
         .Branch(Branch_ID),
         .MemRW(MemRW_ID),
         .RegWrite(RegWrite_out_ID),
+        .Rs1_used(Rs1_used),            //Rs1被使用
+        .Rs2_used(Rs2_used),            //Rs2被使用
         .CPU_MIO(),                     // ignore 
         .Ecall(),                       
         .Mret(),
@@ -111,8 +125,8 @@ module Pipeline_ID(
         .clk(clk_ID),
         .rst(rst_ID),
         .RegWrite(RegWrite_in_ID),      // 注意，不是当前的信号，是WB输入的信号
-        .Rs1_addr(Inst_in_ID[19:15]),   // 读取是当前的信号
-        .Rs2_addr(Inst_in_ID[24:20]),
+        .Rs1_addr(Rs1_addr_ID),   // 读取是当前的信号
+        .Rs2_addr(Rs2_addr_ID),
         .Wt_addr(Wt_addr_ID),    
         .Wt_data(Wt_data_ID),           
 
@@ -153,4 +167,7 @@ module Pipeline_ID(
     );
 
     assign Wt_addr_out_ID = Inst_in_ID[11:7];
+    assign Rs1_addr_ID = Inst_in_ID[19:15];   //寄存器地址1
+    assign Rs2_addr_ID = Inst_in_ID[24:20];   //寄存器地址2
+    
 endmodule

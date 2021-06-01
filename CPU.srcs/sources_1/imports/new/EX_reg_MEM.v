@@ -2,7 +2,8 @@ module EX_reg_MEM (
     input clk_EXMem, //寄存器时钟
     input rst_EXMem, //寄存器复位
     input en_EXMem, //寄存器使能
-
+    input NOP_EXMem, //
+    
     input[31:0] PC_in_EXMem, //PC输入
     input[31:0] PC4_in_EXMem, //PC+4输入
     input [4:0] Wt_addr_EXMem, //写目的寄存器地址输入
@@ -41,7 +42,19 @@ module EX_reg_MEM (
             Jump_out_EXMem <= 0;
             MemtoReg_out_EXMem <= 0;
             RegWrite_out_EXMem <= 0;
-        end 
+        end else if (NOP_EXMem == 1) begin
+            PC_out_EXMem <= 0;
+            PC4_out_EXMem <= 0;
+            Wt_addr_out_EXMem <= 0;
+            zero_out_EXMem <= 0;
+            ALU_out_EXMem <= 0;
+            Rs2_out_EXMem <= 0;
+            Branch_out_EXMem <= 0;
+            MemRW_out_EXMem <= 0;
+            Jump_out_EXMem <= 0;
+            MemtoReg_out_EXMem <= 0;
+            RegWrite_out_EXMem <= 0;
+        end
         else begin
             PC_out_EXMem <= PC_in_EXMem;
             PC4_out_EXMem <= PC4_in_EXMem;

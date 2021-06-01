@@ -34,7 +34,9 @@ module SCPU_ctrl(
     output reg ALU_src_B,   //
     output reg [3:0] Branch,
     output reg Jump,MemRW,RegWrite,CPU_MIO,
-    output reg Ecall,Mret,Ill_instr
+    output reg Ecall,Mret,Ill_instr,
+    output reg Rs1_used,            //Rs1被使用
+    output reg Rs2_used             //Rs2被使用
     );
     
     parameter 
@@ -112,6 +114,8 @@ module SCPU_ctrl(
         Mret <= ({Fun_mret,Fun_ecall} == MRET_choose && OPcode == CSR_opcode)?1:0;
         Ill_instr <= (OPcode == B_opcode || OPcode == R_opcode || OPcode == S_opcode || OPcode == L_opcode || OPcode == JAL_opcode || OPcode == I_opcode || OPcode == CSR_opcode)?0:1;
         CPU_MIO <= 0;    // not use
+        Rs1_used = OPcode == JAL_opcode ? 0 : 1;            //Rs1被使用
+        Rs2_used = OPcode == S_opcode || OPcode == B_opcode || OPcode == R_opcode ? 1 : 0;            //Rs2被使用
     end
     
 endmodule

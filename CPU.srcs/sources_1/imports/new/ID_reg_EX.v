@@ -2,7 +2,8 @@ module ID_reg_EX (
     input clk_IDEX,                     //寄存器时钟
     input rst_IDEX,                     //寄存器复位
     input en_IDEX,                      //寄存器使能
-
+    input NOP_IDEX,
+    
     input[31:0] PC_in_IDEX,             //PC输入
     input[4:0] Wt_addr_IDEX,            //写目的地址输入
     input[31:0] Rs1_in_IDEX,            //操作数1输入
@@ -43,7 +44,21 @@ module ID_reg_EX (
             Jump_out_IDEX <= 0;
             MemtoReg_out_IDEX <= 0;
             RegWrite_out_IDEX <= 0;
-        end else begin
+        end else if (NOP_IDEX ==1 ) begin
+            PC_out_IDEX <= 0;
+            Wt_addr_out_IDEX <= 0;
+            Rs1_out_IDEX <= 0;
+            Rs2_out_IDEX <= 0;
+            Imm_out_IDEX <= 0;
+            ALUSrc_B_out_IDEX <= 0;
+            ALU_control_out_IDEX <= 0;
+            Branch_out_IDEX <= 0;
+            MemRW_out_IDEX <= 0;
+            Jump_out_IDEX <= 0;
+            MemtoReg_out_IDEX <= 0;
+            RegWrite_out_IDEX <= 0;
+        end
+        else begin
             PC_out_IDEX <= PC_in_IDEX;
             Wt_addr_out_IDEX <= Wt_addr_IDEX;
             Rs1_out_IDEX <= Rs1_in_IDEX;

@@ -12,7 +12,7 @@ module Pipeline_EX (
     output [31:0] PC4_out_EX,   //PC+4输出
     output zero_out_EX,         //ALU判0输出
     output [31:0] ALU_out_EX,   //ALU计算输出
-    output [31:0] Rs2_out_EX    //操作数2输出
+    output [31:0] Rs2_out_EX    //Rs2输出
 );
     //选择ALU的第二个加数
     wire [31:0] ALU_add2;
@@ -34,5 +34,5 @@ module Pipeline_EX (
 
     assign PC_out_EX = PC_in_EX + Imm_in_EX;
     assign PC4_out_EX = PC_in_EX + 4;
-    assign Rs2_out_EX = ALU_add2;
+    assign Rs2_out_EX = Rs2_in_EX;
 endmodule //Pipeline_EX

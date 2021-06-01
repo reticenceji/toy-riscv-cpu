@@ -11,7 +11,7 @@
 // Tool Versions: 
 // Description: 
 // 
-// Dependencies: 
+// Dependenciefiles: 
 // 
 // Revision:
 // Revision 0.01 - File Created
@@ -26,15 +26,14 @@ module Pipeline_CPU(
     input[31:0] Data_in,        //存储器数据输入
     input[31:0] inst_IF,        //取指阶段指令
 
-    // for debug
-    output [31:0] PC_out_IF,    //取指阶段PC输出
+    output [31:0] PC_out_IF,    //取指阶段PC输出，读取ROM
     output [31:0] PC_out_ID,    //译码阶段PC输出
     output [31:0] inst_ID,      //译码阶段指令
     output [31:0] PC_out_Ex,    //执行阶段PC输出
     output [31:0] MemRW_Ex,     //执行阶段存储器读写
-    output [31:0] MemRW_Mem,    //访存阶段存储器读写
-    output [31:0] Addr_out,     //地址输出
-    output [31:0] Data_out,     //CPU数据输出
+    output [31:0] MemRW_Mem,    //访存阶段存储器读写，读取RAM
+    output [31:0] Addr_out,     //地址输出，写入RAM的地址
+    output [31:0] Data_out,     //CPU数据输出，写入RAM
     output [31:0] Data_out_WB,  //写回数据输出
     
     output wire [31:0] ra  ,    //寄存器
@@ -72,22 +71,24 @@ module Pipeline_CPU(
 
     wire PCSrc_MEM;
     wire [31:0] PC_out_EXMem; //PC输出
-
+    wire en_IF;
     Pipeline_IF Instruction_Fetch(
         .clk_IF(clk),               //时钟
         .rst_IF(rst),               //复位
-        .en_IF(1),                //使能
+        .en_IF(en_IF),                //使能
         .PC_in_IF(PC_out_EXMem),      //取指令PC输入
         .PCSrc(PCSrc_MEM),                //PC输入选择
 
         .PC_out_IF(PC_out_IF) //PC输出
     );
 
+    wire NOP_IFID,NOP_IDEX,NOP_EXMEM,en_IFID;
     wire [31:0] inst_out_IFID,PC_out_IFID;
     IF_reg_ID IF_ID(
         .clk_IFID(clk),
         .rst_IFID(rst),
-        .en_IFID(1),
+        .en_IFID(en_IFID),
+        .NOP_IFID(NOP_IFID),
         .PC_in_IFID(PC_out_IF),        //PC输入
         .inst_in_IFID(inst_IF),      //指令输入
 
@@ -104,6 +105,8 @@ module Pipeline_CPU(
     wire [2:0] ALU_control_ID;
     wire [1:0] MemtoReg_ID;
     wire ALUSrc_B_ID,MemRW_ID,Jump_ID,RegWrite_out_ID;
+    wire [4:0] Rs1_addr_ID,Rs2_addr_ID;
+    wire Rs1_used_ID,Rs2_used_ID;
     Pipeline_ID Instruction_Decode(
         .clk_ID(clk),
         .rst_ID(rst),
@@ -112,6 +115,10 @@ module Pipeline_CPU(
         .Wt_addr_ID(Wt_addr_out_MemWB),
         .Wt_data_ID(Data_out_WB),
 
+        .Rs1_addr_ID(Rs1_addr_ID),         //译码阶段寄存器读地址1
+        .Rs2_addr_ID(Rs2_addr_ID),         //译码阶段寄存器读地址2
+        .Rs1_used(Rs1_used_ID),                 //Rs1被使用
+        .Rs2_used(Rs2_used_ID),                 //Rs2被使用
         .Wt_addr_out_ID(Wt_addr_out_ID),
         .Rs1_out_ID(Rs1_out_ID),
         .Rs2_out_ID(Rs2_out_ID),
@@ -173,6 +180,7 @@ module Pipeline_CPU(
         .clk_IDEX(clk),
         .rst_IDEX(rst),
         .en_IDEX(1),
+        .NOP_IDEX(NOP_IDEX),
         .PC_in_IDEX(PC_out_IFID),
         .Wt_addr_IDEX(Wt_addr_out_ID),
         .Rs1_in_IDEX(Rs1_out_ID),
@@ -234,6 +242,7 @@ module Pipeline_CPU(
         .clk_EXMem(clk),
         .rst_EXMem(rst),
         .en_EXMem(1),
+        .NOP_EXMem(NOP_EXMEM),
         .PC_in_EXMem(PC_out_EX),
         .PC4_in_EXMem(PC4_out_EX),
         .Wt_addr_EXMem(Wt_addr_out_IDEX),
@@ -251,7 +260,7 @@ module Pipeline_CPU(
         .Wt_addr_out_EXMem(Wt_addr_out_EXMem),
         .zero_out_EXMem(zero_out_EXMem),
         .ALU_out_EXMem(ALU_out_EXMem),
-        .Rs2_out_EXMem(Rs2_out_EXMem),
+        .Rs2_out_EXMem(Rs2_out_EXMem),          // 要向Ram中写的数据
         .Branch_out_EXMem(Branch_out_EXMem),
         .MemRW_out_EXMem(MemRW_out_EXMem),
         .Jump_out_EXMem(Jump_out_EXMem),
@@ -301,13 +310,33 @@ module Pipeline_CPU(
         .Data_out_WB(Data_out_WB)
     );
 
+    stall race(
+        .rst_stall(rst),                //复位
+        .RegWrite_out_IDEX(RegWrite_out_IDEX),        //执行阶段寄存器写控制
+        .Rd_addr_out_IDEX(Wt_addr_out_IDEX),    //执行阶段寄存器写地址
+        .RegWrite_out_EXMem(RegWrite_out_EXMem),       //访存阶段寄存器写控制
+        .Rd_addr_out_EXMem(Wt_addr_out_EXMem),   //访存阶段寄存器写地址
+        .Rs1_addr_ID(Rs1_addr_ID),         //译码阶段寄存器读地址1
+        .Rs2_addr_ID(Rs2_addr_ID),         //译码阶段寄存器读地址2
+        .Rs1_used(Rs1_used_ID),                 //Rs1被使用
+        .Rs2_used(Rs2_used_ID),                 //Rs2被使用
+    
+        .PCSrc_MEMWB(PCSrc_MEM),
+
+        .en_IF(en_IF),                   //流水线寄存器的使能及NOP信号
+        .en_IFID(en_IFID),         
+        .NOP_IFID(NOP_IFID),
+        .NOP_IDEX(NOP_IDEX),
+        .NOP_EXMEM(NOP_EXMEM)
+    );
+
     // assign PC_out_IF = PC_out_IF;
     assign PC_out_ID = PC_out_IFID;
     assign inst_ID = inst_out_IFID;
     assign PC_out_Ex = PC_out_EX;
     assign MemRW_Ex = MemRW_out_IDEX;
     assign MemRW_Mem = MemRW_out_EXMem;
-    assign Addr_out = Wt_addr_out_MemWB;
-    assign Data_out = Data_out_WB;
+    assign Addr_out = ALU_out_EXMem;
+    assign Data_out = Rs2_out_EXMem;
     // assign Data_out_WB = Data_out_WB; 
 endmodule
