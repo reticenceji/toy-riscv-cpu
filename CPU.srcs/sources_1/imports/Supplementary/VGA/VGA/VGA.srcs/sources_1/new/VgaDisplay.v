@@ -34,7 +34,7 @@ module VgaDisplay(
 );
 
     (* ram_style = "block" *) reg [7:0] display_data[0:4095];
-    initial $readmemh("vga_debugger.mem", display_data);
+    initial $readmemh("vga_debuggerp.mem", display_data);
 
     wire [11:0] text_index = (vga_y / 16) * 80 + vga_x / 8;
     // I don't know why I need this '- (vga_y / 16)' ...

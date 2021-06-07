@@ -194,14 +194,14 @@ module CPU_SOC(
         .inst_IF(instruction),        //取指阶段指令
 
         .PC_out_IF(PC_out),    //取指阶段PC输出
-        .PC_out_ID(),          //译码阶段PC输出
-        .inst_ID(),      //译码阶段指令
-        .PC_out_Ex(),    //执行阶段PC输出
-        .MemRW_Ex(),     //执行阶段存储器读写
+        .PC_out_ID(PC_out_ID),          //译码阶段PC输出
+        .inst_ID(inst_ID),      //译码阶段指令
+        .PC_out_Ex(PC_out_Ex),    //执行阶段PC输出
+        .MemRW_Ex(MemRW_Ex),     //执行阶段存储器读写
         .MemRW_Mem(MemRW),    //访存阶段存储器读写
         .Addr_out(Addr_out),     //地址输出
         .Data_out(Data_out),     //CPU数据输出
-        .Data_out_WB(),  //写回数据输出
+        .Data_out_WB(Data_out_WB),  //写回数据输出
         
         .ra (ra ),
         .sp (sp ),
@@ -260,54 +260,109 @@ module CPU_SOC(
         .Peripheral_in(Peripheral_in)
     );
 
-    VGA U11(
-        .clk_25m(clkdiv[1]),
-        .clk_100m(clk_100mhz),
-        .rst(rst),
-        .pc(PC_out),
-        .inst(instruction),
-        .alu_res(Addr_out),
-        .mem_wen(MemRW),
-        .dmem_o_data(douta),
-        .dmem_i_data(ram_data_in),
-        .dmem_addr(Addr_out),
-        .x0 (0),
-        .ra (ra ),
-        .sp (sp ),
-        .gp (gp ),
-        .tp (tp ),
-        .t0 (t0 ),
-        .t1 (t1 ),
-        .t2 (t2 ),
-        .s0 (s0 ),
-        .s1 (s1 ),
-        .a0 (a0 ),
-        .a1 (a1 ),
-        .a2 (a2 ),
-        .a3 (a3 ),
-        .a4 (a4 ),
-        .a5 (a5 ),
-        .a6 (a6 ),
-        .a7 (a7 ),
-        .s2 (s2 ),
-        .s3 (s3 ),
-        .s4 (s4 ),
-        .s5 (s5 ),
-        .s6 (s6 ),
-        .s7 (s7 ),
-        .s8 (s8 ),
-        .s9 (s9 ),
-        .s10(s10),
-        .s11(s11),
-        .t3 (t3 ),
-        .t4 (t4 ),
-        .t5 (t5 ),
-        .t6 (t6 ),
+// 单周期CPU
+//    VGA U11(
+//        .clk_25m(clkdiv[1]),
+//        .clk_100m(clk_100mhz),
+//        .rst(rst),
+//        .pc(PC_out),
+//        .inst(instruction),
+//        .alu_res(Addr_out),
+//        .mem_wen(MemRW),
+//        .dmem_o_data(douta),
+//        .dmem_i_data(ram_data_in),
+//        .dmem_addr(Addr_out),
+//        .x0 (0),
+//        .ra (ra ),
+//        .sp (sp ),
+//        .gp (gp ),
+//        .tp (tp ),
+//        .t0 (t0 ),
+//        .t1 (t1 ),
+//        .t2 (t2 ),
+//        .s0 (s0 ),
+//        .s1 (s1 ),
+//        .a0 (a0 ),
+//        .a1 (a1 ),
+//        .a2 (a2 ),
+//        .a3 (a3 ),
+//        .a4 (a4 ),
+//        .a5 (a5 ),
+//        .a6 (a6 ),
+//        .a7 (a7 ),
+//        .s2 (s2 ),
+//        .s3 (s3 ),
+//        .s4 (s4 ),
+//        .s5 (s5 ),
+//        .s6 (s6 ),
+//        .s7 (s7 ),
+//        .s8 (s8 ),
+//        .s9 (s9 ),
+//        .s10(s10),
+//        .s11(s11),
+//        .t3 (t3 ),
+//        .t4 (t4 ),
+//        .t5 (t5 ),
+//        .t6 (t6 ),
 
-        .hs(HSYNC),
-        .vs(VSYNC),
-        .vga_r(Red),
-        .vga_g(Green),
-        .vga_b(Blue)
-    );
+//        .hs(HSYNC),
+//        .vs(VSYNC),
+//        .vga_r(Red),
+//        .vga_g(Green),
+//        .vga_b(Blue)
+//    );
+    VGAp vgap(
+       .clk_25m(clkdiv[1]),
+       .clk_100m(clk_100mhz),
+       .rst(rst),
+        
+        .PC_IF(PC_out),
+        .inst_IF(),
+        .PC_ID(PC_out_ID),
+        .inst_ID(inst_ID),
+        .PC_Ex(PC_out_Ex),
+        .MemRW_Ex(MemRW_Ex),
+        .MemRW_Mem(MemRW),
+        .Addr_out(Addr_out),     //地址输出
+        .Data_out(Data_out),     //CPU数据输出
+        .Data_out_WB(Data_out_WB),  //写回数据输出
+       .x0 (0),
+       .ra (ra ),
+       .sp (sp ),
+       .gp (gp ),
+       .tp (tp ),
+       .t0 (t0 ),
+       .t1 (t1 ),
+       .t2 (t2 ),
+       .s0 (s0 ),
+       .s1 (s1 ),
+       .a0 (a0 ),
+       .a1 (a1 ),
+       .a2 (a2 ),
+       .a3 (a3 ),
+       .a4 (a4 ),
+       .a5 (a5 ),
+       .a6 (a6 ),
+       .a7 (a7 ),
+       .s2 (s2 ),
+       .s3 (s3 ),
+       .s4 (s4 ),
+       .s5 (s5 ),
+       .s6 (s6 ),
+       .s7 (s7 ),
+       .s8 (s8 ),
+       .s9 (s9 ),
+       .s10(s10),
+       .s11(s11),
+       .t3 (t3 ),
+       .t4 (t4 ),
+       .t5 (t5 ),
+       .t6 (t6 ),
+     
+       .hs(HSYNC),
+       .vs(VSYNC),
+       .vga_r(Red),
+       .vga_g(Green),
+       .vga_b(Blue)
+);
 endmodule
